@@ -4,10 +4,18 @@ defmodule HeadsUpWeb.IncidentLive.Index do
   alias HeadsUpWeb.CustomComponents
 
   def mount(_params, _session, socket) do
-    socket =
-      assign(socket, incidents: HeadsUp.Incidents.list_incidents(), page_title: "Incidents")
-
     {:ok, socket}
+  end
+
+  def handle_params(_params, _uri, socket) do
+    incidents = HeadsUp.Incidents.list_incidents()
+
+    socket =
+      socket
+      |> assign(incidents: incidents)
+      |> assign(page_title: "Incidents")
+
+    {:noreply, socket}
   end
 
   def render(assigns) do
@@ -20,22 +28,7 @@ defmodule HeadsUpWeb.IncidentLive.Index do
         </:tagline>
       </CustomComponents.headline>
       <div class="incidents">
-        <.incident_card :for={incident <- @incidents} incident={incident} />
-      </div>
-    </div>
-    """
-  end
-
-  def incident_card(assigns) do
-    ~H"""
-    <div class="card">
-      <img src={@incident.image_path} />
-      <h2>{@incident.name}</h2>
-      <div class="details">
-        <CustomComponents.badge status={@incident.status} />
-        <div class="priority">
-          {@incident.priority}
-        </div>
+        <CustomComponents.incident_cards incidents={@incidents} />
       </div>
     </div>
     """

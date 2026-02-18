@@ -35,6 +35,25 @@ defmodule HeadsUpWeb.CustomComponents do
     """
   end
 
+  attr :incidents, :list
+
+  def incident_cards(assigns) do
+    ~H"""
+    <div class="card" :for={incident <- @incidents}>
+      <img src={incident.image_path} />
+      <h2>{incident.name}</h2>
+      <div class="details">
+        <.badge status={incident.status} />
+        <div class="priority">
+          {incident.priority}
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  attr :incidents, :list, required: true
+
   def urgent_incidents(assigns) do
     ~H"""
     <section>
