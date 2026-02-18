@@ -34,4 +34,18 @@ defmodule HeadsUpWeb.CustomComponents do
     </div>
     """
   end
+
+  def urgent_incidents(assigns) do
+    ~H"""
+    <section>
+      <h4>Urgent Incidents</h4>
+      <ul class="incidents">
+        <li :for={incident <- @incidents}>
+          <img src={incident.image_path} />
+          {incident.name}
+        </li>
+      </ul>
+    </section>
+    """
+  end
 end
