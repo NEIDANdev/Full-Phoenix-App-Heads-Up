@@ -5,7 +5,7 @@ defmodule HeadsUpWeb.IncidentLive.Index do
 
   def mount(_params, _session, socket) do
     socket =
-      assign(socket, :incidents, HeadsUp.Incidents.list_incidents())
+      assign(socket, incidents: HeadsUp.Incidents.list_incidents(), page_title: "Incidents")
 
     {:ok, socket}
   end
