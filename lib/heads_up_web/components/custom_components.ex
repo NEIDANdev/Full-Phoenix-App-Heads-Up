@@ -39,15 +39,17 @@ defmodule HeadsUpWeb.CustomComponents do
 
   def incident_cards(assigns) do
     ~H"""
-    <div class="card" :for={incident <- @incidents}>
-      <img src={incident.image_path} />
-      <h2>{incident.name}</h2>
-      <div class="details">
-        <.badge status={incident.status} />
-        <div class="priority">
-          {incident.priority}
+    <div :for={incident <- @incidents} class="card">
+      <.link navigate={~p"/#{incident}"}>
+        <img src={incident.image_path} />
+        <h2>{incident.name}</h2>
+        <div class="details">
+          <.badge status={incident.status} />
+          <div class="priority">
+            {incident.priority}
+          </div>
         </div>
-      </div>
+      </.link>
     </div>
     """
   end
@@ -60,8 +62,10 @@ defmodule HeadsUpWeb.CustomComponents do
       <h4>Urgent Incidents</h4>
       <ul class="incidents">
         <li :for={incident <- @incidents}>
-          <img src={incident.image_path} />
-          {incident.name}
+          <.link navigate={~p"/#{incident}"}>
+            <img src={incident.image_path} />
+            {incident.name}
+          </.link>
         </li>
       </ul>
     </section>
