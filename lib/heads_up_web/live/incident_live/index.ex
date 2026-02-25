@@ -12,7 +12,7 @@ defmodule HeadsUpWeb.IncidentLive.Index do
 
     socket =
       socket
-      |> assign(incidents: incidents)
+      |> stream(:incidents, incidents)
       |> assign(page_title: "Incidents")
 
     {:noreply, socket}
@@ -28,7 +28,11 @@ defmodule HeadsUpWeb.IncidentLive.Index do
         </:tagline>
       </CustomComponents.headline>
       <div class="incidents">
-        <CustomComponents.incident_cards incidents={@incidents} />
+        <CustomComponents.incident_cards
+          :for={{dom_id, incident} <- @streams.incidents}
+          incident={incident}
+          id={dom_id}
+        />
       </div>
     </div>
     """
