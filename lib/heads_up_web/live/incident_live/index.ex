@@ -2,18 +2,20 @@ defmodule HeadsUpWeb.IncidentLive.Index do
   use HeadsUpWeb, :live_view
 
   alias HeadsUpWeb.CustomComponents
+  alias HeadsUp.Incidents
 
   def mount(_params, _session, socket) do
     {:ok, socket}
   end
 
   def handle_params(_params, _uri, socket) do
-    incidents = HeadsUp.Incidents.filter_incidents()
+    incidents = Incidents.list_incidents()
 
     socket =
       socket
       |> stream(:incidents, incidents)
       |> assign(page_title: "Incidents")
+      |> assign(:form, to_form(%{}))
 
     {:noreply, socket}
   end
@@ -27,6 +29,9 @@ defmodule HeadsUpWeb.IncidentLive.Index do
           Thanks for pitching in. {vibe}
         </:tagline>
       </CustomComponents.headline>
+
+      <.filter_form form={@form} />
+
       <div class="incidents">
         <CustomComponents.incident_cards
           :for={{dom_id, incident} <- @streams.incidents}
@@ -35,6 +40,26 @@ defmodule HeadsUpWeb.IncidentLive.Index do
         />
       </div>
     </div>
+    """
+  end
+
+  def filter_form(assigns) do
+    ~H"""
+    <.form for={@form}>
+      <.input field={@form[:q]} placeholder="Incident Name" autocomplete="off" />
+      <.input
+        type="select"
+        field={@form[:status]}
+        prompt="Status"
+        options={[:open, :closed, :pending]}
+      />
+      <.input
+        type="select"
+        field={@form[:sort_by]}
+        prompt="Sort by"
+        options={[:name, :priority]}
+      />
+    </.form>
     """
   end
 end
