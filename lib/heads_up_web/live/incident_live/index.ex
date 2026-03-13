@@ -8,14 +8,12 @@ defmodule HeadsUpWeb.IncidentLive.Index do
     {:ok, socket}
   end
 
-  def handle_params(_params, _uri, socket) do
-    incidents = Incidents.list_incidents()
-
+  def handle_params(params, _uri, socket) do
     socket =
       socket
-      |> stream(:incidents, incidents)
       |> assign(page_title: "Incidents")
-      |> assign(:form, to_form(%{}))
+      |> assign(:form, to_form(params))
+      |> stream(:incidents, Incidents.filter_incidents(params))
 
     {:noreply, socket}
   end
@@ -68,10 +66,12 @@ defmodule HeadsUpWeb.IncidentLive.Index do
   end
 
   def handle_event("filter", filters, socket) do
-    socket =
-      socket
-      |> assign(:form, to_form(filters))
-      |> stream(:incidents, Incidents.filter_incidents(filters), reset: true)
+    filters =
+      filters
+      |> Map.take(~w(q status sort_by))
+      |> Map.reject(fn {_, v} -> v == "" end)
+
+    socket = push_navigate(socket, to: ~p"/?#{filters}")
 
     {:noreply, socket}
   end
