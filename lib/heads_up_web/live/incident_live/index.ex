@@ -13,7 +13,7 @@ defmodule HeadsUpWeb.IncidentLive.Index do
       socket
       |> assign(page_title: "Incidents")
       |> assign(:form, to_form(params))
-      |> stream(:incidents, Incidents.filter_incidents(params))
+      |> stream(:incidents, Incidents.filter_incidents(params), reset: true)
 
     {:noreply, socket}
   end
@@ -31,6 +31,10 @@ defmodule HeadsUpWeb.IncidentLive.Index do
       <.filter_form form={@form} />
 
       <div class="incidents">
+        <div id="empty" class="no-results only:block hidden">
+          😢 No incidents found. Try changing your filters.
+        </div>
+
         <CustomComponents.incident_cards
           :for={{dom_id, incident} <- @streams.incidents}
           incident={incident}
@@ -61,6 +65,9 @@ defmodule HeadsUpWeb.IncidentLive.Index do
           "Priority: Low to High": "priority_asc"
         ]}
       />
+      <.link patch={~p"/"}>
+        Reset
+      </.link>
     </.form>
     """
   end
@@ -71,7 +78,7 @@ defmodule HeadsUpWeb.IncidentLive.Index do
       |> Map.take(~w(q status sort_by))
       |> Map.reject(fn {_, v} -> v == "" end)
 
-    socket = push_navigate(socket, to: ~p"/?#{filters}")
+    socket = push_patch(socket, to: ~p"/?#{filters}")
 
     {:noreply, socket}
   end
